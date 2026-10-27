@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stockroom — Inventory Management</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">S</span><span>Stockroom</span></div>
+    <p class="nav-label">WORKSPACE</p>
+    <a class="nav-item active" href="/">▦ &nbsp; Inventory overview</a>
+    <a class="nav-item" href="#products">▤ &nbsp; Products</a>
+    <div class="sidebar-bottom"><span class="status-dot"></span> API connection <strong id="api-status">checking…</strong></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><p class="eyebrow">WORKSPACE / INVENTORY</p><h1>Inventory overview</h1><p class="subheading">Monitor stock, manage products, and keep operations moving.</p></div>
+      <button class="primary" id="add-product-btn">＋ Add product</button>
+    </header>
+
+    <section class="metrics" aria-label="Inventory summary">
+      <article class="metric-card"><div class="metric-heading">Total products <span>▦</span></div><div class="metric-value" id="total-products">—</div><div class="metric-foot">Unique product records</div></article>
+      <article class="metric-card"><div class="metric-heading">Units in stock <span>▤</span></div><div class="metric-value" id="total-units">—</div><div class="metric-foot">Across all products</div></article>
+      <article class="metric-card"><div class="metric-heading">Inventory value <span>₹</span></div><div class="metric-value" id="inventory-value">—</div><div class="metric-foot">Price × quantity</div></article>
+      <article class="metric-card warning-card"><div class="metric-heading">Low-stock items <span>!</span></div><div class="metric-value" id="low-stock-count">—</div><button class="text-button" id="show-low-stock">Review low stock →</button></article>
+    </section>
+
+    <section class="panel" id="products">
+      <div class="panel-heading"><div><h2>Products</h2><p>Search and manage your stock catalog.</p></div><button class="secondary" id="refresh-btn">↻ Refresh</button></div>
+      <div class="toolbar">
+        <label class="search-box"><span>⌕</span><input id="search" type="search" placeholder="Search name, SKU, or category…"></label>
+        <select id="category-filter" aria-label="Filter by category"><option value="">All categories</option></select>
+        <label class="check-filter"><input type="checkbox" id="low-only"> Low stock only</label>
+      </div>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>PRODUCT</th><th>SKU</th><th>CATEGORY</th><th>PRICE</th><th>IN STOCK</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
+        <tbody id="product-rows"><tr><td colspan="7" class="empty">Loading inventory…</td></tr></tbody></table>
+      </div>
+      <div class="table-footer"><span id="result-count">0 products</span><span>Inventory data is stored in your database</span></div>
+    </section>
+    <footer>Stockroom Inventory · Built with Python, FastAPI, SQLAlchemy &amp; JavaScript</footer>
+  </main>
+
+  <dialog id="product-dialog">
+    <form id="product-form">
+      <div class="dialog-header"><div><p class="eyebrow">PRODUCT CATALOG</p><h2 id="dialog-title">Add product</h2></div><button type="button" class="icon-button" id="close-dialog" aria-label="Close">✕</button></div>
+      <input type="hidden" id="product-id">
+      <div class="form-grid">
+        <label>Product name *<input id="name" required maxlength="160" placeholder="e.g. Wireless Mouse"></label>
+        <label>SKU *<input id="sku" required maxlength="60" placeholder="e.g. ELEC-001"></label>
+        <label>Category *<input id="category" required maxlength="100" placeholder="e.g. Electronics"></label>
+        <label>Unit price (₹) *<input id="price" type="number" min="0" step="0.01" required placeholder="0.00"></label>
+        <label id="quantity-label">Opening quantity *<input id="quantity" type="number" min="0" step="1" required value="0"></label>
+        <label>Reorder level *<input id="reorder-level" type="number" min="0" step="1" required value="5"></label>
+        <label class="full-width">Description<textarea id="description" rows="3" maxlength="5000" placeholder="Optional product details"></textarea></label>
+      </div>
+      <p class="form-note" id="edit-note">Fields marked * are required.</p>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancel-dialog">Cancel</button><button class="primary" type="submit" id="save-btn">Save product</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="stock-dialog">
+    <form id="stock-form">
+      <div class="dialog-header"><div><p class="eyebrow">INVENTORY CONTROL</p><h2>Adjust stock</h2><p id="stock-product-name" class="subheading"></p></div><button type="button" class="icon-button" id="close-stock-dialog" aria-label="Close">✕</button></div>
+      <input type="hidden" id="stock-product-id">
+      <label>Adjustment type<select id="stock-direction"><option value="add">Add stock</option><option value="remove">Remove stock</option></select></label>
+      <label>Quantity<input id="stock-amount" type="number" min="1" step="1" required value="1"></label>
+      <label>Note (optional)<input id="stock-note" maxlength="300" placeholder="e.g. Supplier delivery"></label>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancel-stock-dialog">Cancel</button><button type="submit" class="primary">Apply adjustment</button></div>
+    </form>
+  </dialog>
+  <script src="/static/app.js"></script>
+</body>
+</html>
